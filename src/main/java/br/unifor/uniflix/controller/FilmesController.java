@@ -22,25 +22,20 @@ public class FilmesController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response airingToday() throws IOException {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://api.themoviedb.org/3" + "/tv/airing_today?api_key=08c2e5168cee4e22b7ee7211c13214a0")
-                .build();
 
-        Call call = client.newCall(request);
-
+        RequestFactory tvMovie = new RequestFactory();
+        Call call = tvMovie.factoringCreate("/tv/airing_today");
         okhttp3.Response response = call.execute();
+
+
         if (response.isSuccessful()) {
             JSONObject jsonResponse = new  JSONObject(response.body().string());
             JSONArray result = jsonResponse.getJSONArray("results");
             List<Filme> filmes = new ArrayList<>();
             for (int i = 0; i < result.length(); ++i) {
                 JSONObject movieJson = result.getJSONObject(i);
-                Filme filme = new Filme();
-                filme.setTitulo(movieJson.getString("title"));
-                filme.setSinopse(movieJson.getString("overview"));
-                filme.setAdulto(movieJson.getBoolean("adult"));
-                filme.setNota(movieJson.getDouble("vote_average"));
+                FilmeAdapter adp = new FilmeAdapter();
+                Filme filme = adp.Adapter(movieJson);
                 filmes.add(filme);
             }
             return Response.ok(filmes).build();
@@ -49,18 +44,14 @@ public class FilmesController {
     }
 
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    //@GET
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response popularMovies() throws IOException {
-        String path = "/movie/popular";
-        OkHttpClient client = new OkHttpClient();
-        RequestFactory request = new RequestFactory(path);
 
-
-        Call call = client.newCall();
-
-
+        RequestFactory movies = new RequestFactory();
+        Call call = movies.factoringCreate("/movie/popular");
         okhttp3.Response response = call.execute();
+
         if (response.isSuccessful()) {
             JSONObject jsonResponse = new  JSONObject(response.body().string());
             JSONArray result = jsonResponse.getJSONArray("results");
