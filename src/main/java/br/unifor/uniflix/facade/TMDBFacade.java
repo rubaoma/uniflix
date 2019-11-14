@@ -1,7 +1,9 @@
 package br.unifor.uniflix.facade;
 
+import br.unifor.uniflix.controller.FilmeAdapter;
 import br.unifor.uniflix.controller.RequestFactory;
 import br.unifor.uniflix.controller.TvShowAdapter;
+import br.unifor.uniflix.model.Filme;
 import br.unifor.uniflix.model.Tvshow;
 import okhttp3.Call;
 import org.json.JSONArray;
@@ -13,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TMDBFacade {
-    public static Response ListaTvshows() throws IOException {
+
+    public List<Tvshow> ListaTvshows() throws IOException {
         RequestFactory tvShows = new RequestFactory();
         Call call = tvShows.factoringCreate("/tv/airing_today");
         okhttp3.Response response = call.execute();
@@ -29,8 +32,29 @@ public class TMDBFacade {
                 Tvshow tvshow = adp.Adapter(tvshowJson);
                 tvshows.add(tvshow);
             }
-            return Response.ok(tvshows).build();
+            return tvshows;
         }
-        return Response.serverError().build();
+        return null;
+    }
+
+
+    public List<Filme> ListaFilmes() throws IOException {
+        RequestFactory movies = new RequestFactory();
+        Call call = movies.factoringCreate("/movie/popular");
+        okhttp3.Response response = call.execute();
+
+        if (response.isSuccessful()) {
+            JSONObject jsonResponse = new  JSONObject(response.body().string());
+            JSONArray result = jsonResponse.getJSONArray("results");
+            List<Filme> filmes = new ArrayList<>();
+            for (int i = 0; i < result.length(); ++i) {
+                JSONObject movieJson = result.getJSONObject(i);
+                FilmeAdapter adp = new FilmeAdapter();
+                Filme filme = adp.Adapter(movieJson);
+                filmes.add(filme);
+            }
+            return filmes;
+        }
+        return null;
     }
 }
