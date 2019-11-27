@@ -25,20 +25,20 @@ public class TMDBFacade {
         if (response.isSuccessful()) {
             JSONObject jsonResponse = new  JSONObject(response.body().string());
             JSONArray result = jsonResponse.getJSONArray("results");
-            List<Tvshow> tvshows = new ArrayList<>();
-            for (int i = 0; i < result.length(); ++i) {
-                JSONObject tvshowJson = result.getJSONObject(i);
-                TvShowAdapter adp = new TvShowAdapter();
-                Tvshow tvshow = adp.Adapter(tvshowJson);
-                tvshows.add(tvshow);
-            }
+
+            TvShowAdapter pegaTvShow = new TvShowAdapter();
+            List<Tvshow> tvshows = pegaTvShow.adapterJsonArray(result);
+
             return tvshows;
+
         }
-        return null;
+        return  ArrayList<>();
+        //return null;
     }
 
 
     public List<Filme> ListaFilmes() throws IOException {
+
         RequestFactory movies = new RequestFactory();
         Call call = movies.factoringCreate("/movie/popular");
         okhttp3.Response response = call.execute();
@@ -46,15 +46,14 @@ public class TMDBFacade {
         if (response.isSuccessful()) {
             JSONObject jsonResponse = new  JSONObject(response.body().string());
             JSONArray result = jsonResponse.getJSONArray("results");
-            List<Filme> filmes = new ArrayList<>();
-            for (int i = 0; i < result.length(); ++i) {
-                JSONObject movieJson = result.getJSONObject(i);
-                FilmeAdapter adp = new FilmeAdapter();
-                Filme filme = adp.Adapter(movieJson);
-                filmes.add(filme);
-            }
+
+            FilmeAdapter pegaFilme = new FilmeAdapter();
+            List<Filme> filmes = pegaFilme.adapterJsonArray(result);
+
             return filmes;
+
         }
-        return null;
-    }
+
+       // return ArrayList<>();
+
 }
